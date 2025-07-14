@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { FaArrowLeft, FaCalendarAlt, FaUserAlt, FaBuilding } from 'react-icons/fa';
+import { FaArrowLeft, FaCalendarAlt, FaUserAlt, FaBuilding, FaFileImage, FaFilePdf, FaFileVideo, FaFileAlt, FaGoogleDrive } from 'react-icons/fa';
 import './News.css';
 
 const NewsDetail = () => {
@@ -95,19 +95,23 @@ const NewsDetail = () => {
             <h3>Attachments</h3>
             
             <ul className="attachment-list">
-              {newsItem.files.map((file, index) => (
-                <li key={`file-${index}`} className="attachment-item">
-                  <a href={file.url} target="_blank" rel="noopener noreferrer">
-                    {file.name}
-                  </a>
-                </li>
-              ))}
+              {newsItem.files.map((file, index) => {
+                let icon = <FaFileAlt style={{ color: '#1a237e', marginRight: 6 }} />;
+                if (file.type && file.type.startsWith('image/')) icon = <FaFileImage style={{ color: '#43a047', marginRight: 6 }} />;
+                else if (file.type === 'application/pdf') icon = <FaFilePdf style={{ color: '#e53935', marginRight: 6 }} />;
+                else if (file.type && file.type.startsWith('video/')) icon = <FaFileVideo style={{ color: '#3949ab', marginRight: 6 }} />;
+                return (
+                  <li key={`file-${index}`} className="attachment-item" style={{ display: 'flex', alignItems: 'center', listStyle: 'none', marginBottom: 2 }}>
+                    {icon}
+                    <a href={file.url} target="_blank" rel="noopener noreferrer" style={{ color: '#1a237e', textDecoration: 'underline' }}>{file.name}</a>
+                  </li>
+                );
+              })}
               
               {newsItem.driveLinks.map((link, index) => (
-                <li key={`link-${index}`} className="attachment-item">
-                  <a href={link.url} target="_blank" rel="noopener noreferrer">
-                    {link.name}
-                  </a>
+                <li key={`link-${index}`} className="attachment-item" style={{ display: 'flex', alignItems: 'center', listStyle: 'none', marginBottom: 2 }}>
+                  <FaGoogleDrive style={{ color: '#0f9d58', marginRight: 6 }} />
+                  <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ color: '#1a237e', textDecoration: 'underline' }}>{link.name}</a>
                 </li>
               ))}
             </ul>
