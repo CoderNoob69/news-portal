@@ -1,0 +1,74 @@
+.admin-page {
+  min-height: calc(100vh - 64px);
+  background-color: #f5f5f5;
+}
+
+.admin-header {
+  background-color: #1a237e;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.admin-header h1 {
+  margin: 0 0 1.5rem;
+  font-size: 2rem;
+}
+
+.admin-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.tab-button {
+  padding: 0.75rem 1.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.tab-button.active {
+  background-color: white;
+  color: #1a237e;
+  border-color: white;
+}
+
+.tab-button:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.admin-content {
+  padding: 2rem;
+}
+
+.admin-section {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-section h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #1a237e;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .admin-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .admin-content {
+    padding: 1rem;
+  }
+}

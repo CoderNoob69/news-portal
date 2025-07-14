@@ -1,0 +1,149 @@
+.department-list-container {
+  padding: 2rem;
+  background-color: #f5f5f5;
+}
+
+.department-list-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #1a237e;
+}
+
+.department-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.department-card {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.department-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.department-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  background-color: #e8eaf6;
+  border-radius: 50%;
+  margin-right: 1rem;
+  color: #1a237e;
+  font-size: 1.5rem;
+}
+
+.department-info {
+  flex: 1;
+}
+
+.department-info h3 {
+  margin: 0 0 0.25rem;
+  color: #1a237e;
+  font-size: 1.25rem;
+}
+
+.department-info p {
+  margin: 0 0 0.5rem;
+  color: #757575;
+  font-size: 0.875rem;
+}
+
+.news-count {
+  font-size: 0.875rem;
+  color: #1a237e;
+  font-weight: 500;
+}
+
+.department-arrow {
+  color: #1a237e;
+  font-size: 1.25rem;
+}
+
+/* Department Page */
+.department-page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px);
+  background-color: #f5f5f5;
+}
+
+.department-header {
+  background-color: #1a237e;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.department-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.department-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.department-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tab-button {
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  /* color: black; */
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.tab-button.active {
+  background-color: #1a237e;
+  color: white;
+  border-color: #1a237e;
+}
+
+.tab-button:hover:not(.active) {
+  background-color: #f5f5f5;
+  border-color: #1a237e;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .department-list-container {
+    padding: 1rem;
+  }
+  
+  .department-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .department-content {
+    padding: 1rem;
+  }
+  
+  .department-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
