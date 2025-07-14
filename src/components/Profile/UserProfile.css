@@ -194,6 +194,30 @@
   background-color: #0d1757;
 }
 
+.profile-success-message {
+  background: #43a047;
+  color: #fff;
+  padding: 0.85rem 1.2rem;
+  border-radius: 6px;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.05rem;
+  box-shadow: 0 2px 8px rgba(67,160,71,0.10);
+}
+
+.profile-error-message {
+  background: #e53935;
+  color: #fff;
+  padding: 0.85rem 1.2rem;
+  border-radius: 6px;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.05rem;
+  box-shadow: 0 2px 8px rgba(229,57,53,0.10);
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
   .profile-container {

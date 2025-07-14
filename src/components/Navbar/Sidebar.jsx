@@ -1,4 +1,4 @@
-import { FaUser, FaHome, FaNewspaper, FaPlus, FaList, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaHome, FaNewspaper, FaPlus, FaList, FaSignOutAlt, FaBuilding } from 'react-icons/fa';
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import './Navbar.css';
 
@@ -28,6 +28,9 @@ const Sidebar = ({ isLoggedIn, userName, onLogout }) => {
         <NavLink to="/admin" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>
           <FaHome /> Home
         </NavLink>
+        <NavLink to="/departments" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>
+          <FaBuilding /> Departments
+        </NavLink>
         <NavLink to="/department" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>
           <FaNewspaper /> News
         </NavLink>
@@ -35,7 +38,7 @@ const Sidebar = ({ isLoggedIn, userName, onLogout }) => {
           <FaPlus /> Post a News
         </NavLink>
         <NavLink to="/my-posts" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>
-          <FaList /> Your Posts
+          <FaList /> My Posts
         </NavLink>
         <NavLink to="/profile" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>
           <FaUser /> Profile

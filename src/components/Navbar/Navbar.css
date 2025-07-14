@@ -305,7 +305,7 @@
 }
 .sidebar-profile-btn:focus, .sidebar-profile-btn:hover {
   outline: none;
-  box-shadow: 0 0 0 2px #e3f0ff;
+  /* box-shadow: 0 0 0 2px #e3f0ff; */
 }
 
 /* Responsive design */

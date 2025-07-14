@@ -37,7 +37,7 @@ const UserNewsPage = () => {
   return (
     <div className="user-news-page">
       <div className="user-news-header">
-        <h1>Your News Posts</h1>
+        <h1>My News Posts</h1>
         <Link to="/post" className="add-news-btn">
           <FaPlus /> Post New
         </Link>

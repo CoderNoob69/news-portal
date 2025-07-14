@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminPage from '../components/Admin/AdminPage';
+import Sidebar from '../components/Navbar/Sidebar';
 
-const AdminDashboardPage = () => {
+const AdminDashboardPage = ({ isLoggedIn, userName, onLogout }) => {
   const navigate = useNavigate();
-  
+  const [activeTab, setActiveTab] = useState('news');
+
   // Check if user is logged in
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -13,8 +15,8 @@ const AdminDashboardPage = () => {
       navigate('/');
     }
   }, [navigate]);
-  
-  return <AdminPage />;
+
+  return <AdminPage activeTab={activeTab} setActiveTab={setActiveTab} />;
 };
 
 export default AdminDashboardPage;

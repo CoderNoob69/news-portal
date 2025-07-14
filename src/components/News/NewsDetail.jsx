@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { FaArrowLeft, FaCalendarAlt, FaUserAlt, FaBuilding } from 'react-icons/fa';
 import './News.css';
 
 const NewsDetail = () => {
   const { id } = useParams();
+  const location = useLocation();
   const [newsItem, setNewsItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,12 +44,16 @@ const NewsDetail = () => {
     );
   }
 
+  // Determine where to go back: /admin (home) or /department
+  const backTo = location.state && location.state.fromAdmin ? '/admin' : '/department';
+  const backText = location.state && location.state.fromAdmin ? 'Back to Home' : 'Back to News';
+
   if (error || !newsItem) {
     return (
       <div className="news-detail-container">
         <div className="error-message">{error || 'News item not found'}</div>
-        <Link to="/department" className="back-link">
-          <FaArrowLeft /> Back to News
+        <Link to={backTo} className="back-link">
+          <FaArrowLeft /> {backText}
         </Link>
       </div>
     );
@@ -57,8 +62,8 @@ const NewsDetail = () => {
   return (
     <div className="news-detail-container">
       <div className="news-detail-card">
-        <Link to="/department" className="back-link">
-          <FaArrowLeft /> Back to News
+        <Link to={backTo} className="back-link">
+          <FaArrowLeft /> {backText}
         </Link>
         
         <div className="news-header">
@@ -70,10 +75,7 @@ const NewsDetail = () => {
               <span>{formatDate(newsItem.date)}</span>
             </div>
             
-            <div className="meta-item">
-              <FaUserAlt />
-              <span>{newsItem.author}</span>
-            </div>
+            
             
             <div className="meta-item">
               <FaBuilding />

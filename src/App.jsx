@@ -10,6 +10,7 @@ import NewsPage from './pages/NewsPage';
 import NewsUploadPage from './pages/NewsUploadPage';
 import UserNewsPage from './pages/UserNewsPage';
 import ProfilePage from './pages/ProfilePage';
+import DepartmentList from './components/Department/DepartmentList';
 import './App.css';
 
 function App() {
@@ -56,7 +57,9 @@ function App() {
   return (
     <Router>
       <div className="app-layout">
-        <Sidebar isLoggedIn={isLoggedIn} userName={userName} onLogout={handleLogout} />
+        {isLoggedIn && (
+          <Sidebar isLoggedIn={isLoggedIn} userName={userName} onLogout={handleLogout} />
+        )}
         <div className="main-content-with-sidebar">
           <Navbar />
           <main className="main-content">
@@ -64,16 +67,15 @@ function App() {
               {/* Public routes */}
               <Route path="/" element={<HomePage onLogin={handleLogin} />} />
               <Route path="/signup" element={<SignUpPage onLogin={handleLogin} />} />
-              
               {/* Protected routes */}
               <Route path="/admin" element={<AdminDashboardPage />} />
+              <Route path="/departments" element={<DepartmentList />} />
               <Route path="/department" element={<DepartmentNewsPage />} />
               <Route path="/department/:department" element={<DepartmentNewsPage />} />
               <Route path="/news/:id" element={<NewsPage />} />
               <Route path="/post" element={<NewsUploadPage />} />
               <Route path="/my-posts" element={<UserNewsPage />} />
               <Route path="/profile" element={<ProfilePage onUserNameChange={handleUserNameChange} />} />
-              
               {/* Fallback route */}
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>

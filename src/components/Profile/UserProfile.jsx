@@ -15,6 +15,8 @@ const UserProfile = ({ onUserNameChange }) => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(profile);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   const departments = [
     'Computer Science and Engineering (CSE)',
@@ -35,9 +37,29 @@ const UserProfile = ({ onUserNameChange }) => {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        const photoUrl = reader.result;
-        setFormData(prev => ({ ...prev, photo: photoUrl }));
-        // In a real app, you would upload this to a server
+        const img = new window.Image();
+        img.onload = () => {
+          // Create a canvas to resize the image
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const size = 64;
+          canvas.width = size;
+          canvas.height = size;
+          // Draw the image centered and cover
+          let sx = 0, sy = 0, sw = img.width, sh = img.height;
+          if (img.width > img.height) {
+            sx = (img.width - img.height) / 2;
+            sw = sh = img.height;
+          } else if (img.height > img.width) {
+            sy = (img.height - img.width) / 2;
+            sw = sh = img.width;
+          }
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+          // Compress as JPEG (quality 0.4)
+          const photoUrl = canvas.toDataURL('image/jpeg', 0.4);
+          setFormData(prev => ({ ...prev, photo: photoUrl }));
+        };
+        img.src = reader.result;
       };
       reader.readAsDataURL(file);
     }
@@ -61,14 +83,16 @@ const UserProfile = ({ onUserNameChange }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real app, this would be an API call to update the profile
-    // Update localStorage for demo purposes
-    localStorage.setItem('userName', formData.name);
-    localStorage.setItem('userBranch', formData.branch);
-    localStorage.setItem('userDesignation', formData.designation);
-    localStorage.setItem('userEmail', formData.email);
-    if (formData.photo) {
-      localStorage.setItem('userPhoto', formData.photo);
+    setError('');
+    try {
+      localStorage.setItem('userName', formData.name);
+      localStorage.setItem('userBranch', formData.branch);
+      localStorage.setItem('userDesignation', formData.designation);
+      localStorage.setItem('userEmail', formData.email);
+      localStorage.setItem('userPhoto', formData.photo || ''); // Always set, even if empty
+    } catch (err) {
+      setError('Image is too large to save. Please use a smaller image.');
+      return;
     }
     // Re-sync state from localStorage to ensure UI updates
     const updatedProfile = {
@@ -81,9 +105,12 @@ const UserProfile = ({ onUserNameChange }) => {
     setProfile(updatedProfile);
     setFormData(updatedProfile);
     setIsEditing(false);
+    setSuccess('Profile updated successfully!');
+    setTimeout(() => setSuccess(''), 2000);
     if (onUserNameChange) {
       onUserNameChange(updatedProfile.name);
     }
+    console.log('Profile updated:', updatedProfile);
   };
 
   return (
@@ -91,6 +118,9 @@ const UserProfile = ({ onUserNameChange }) => {
       <div className="profile-card">
         <h2>User Profile</h2>
         
+        {success && <div className="profile-success-message">{success}</div>}
+        {error && <div className="profile-error-message">{error}</div>}
+
         {isEditing ? (
           <form onSubmit={handleSubmit} className="profile-form">
             <div className="profile-photo-upload" {...getRootProps()}>

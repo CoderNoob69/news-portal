@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import { FaCalendarAlt, FaUserAlt, FaAngleRight, FaBuilding } from 'react-icons/fa';
 import './News.css';
 
-const NewsList = ({ departmentFilter = null, limit = null }) => {
+const NewsList = ({ departmentFilter = null }) => {
   const [newsItems, setNewsItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { department } = useParams();
+  const location = useLocation();
   
   // Use department from URL params if provided, otherwise use the prop
   const activeDepartment = department || departmentFilter;
   
-  // Items per page
-  const itemsPerPage = limit || 20;
+  // Always show 10 items per page
+  const itemsPerPage = 10;
 
   useEffect(() => {
     // In a real app, this would be an API call to fetch news items
@@ -93,12 +94,7 @@ const NewsList = ({ departmentFilter = null, limit = null }) => {
               <div className="news-card-meta">
                 <div className="meta-item">
                   <FaCalendarAlt />
-                  <span>{formatDate(item.date)}</span>
-                </div>
-                
-                <div className="meta-item">
-                  <FaUserAlt />
-                  <span>{item.author}</span>
+                  <span>{formatDate(item.date)} • {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
                 <div className="meta-item">
                   <FaBuilding />
@@ -115,7 +111,11 @@ const NewsList = ({ departmentFilter = null, limit = null }) => {
               )}
               
               <div className="news-card-footer">
-                <Link to={`/news/${item.id}`} className="read-more-link">
+                <Link
+                  to={`/news/${item.id}`}
+                  className="read-more-link"
+                  state={location.pathname === '/admin' ? { fromAdmin: true } : undefined}
+                >
                   Read More <FaAngleRight />
                 </Link>
                 
