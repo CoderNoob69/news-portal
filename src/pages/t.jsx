@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
+import './t.css';
 
 const MAX_SIZE   = 500 * 1024 * 1024;
 const API_UPLOAD = 'http://localhost:4000/api/upload';
@@ -109,49 +110,56 @@ export default function NewsUpload() {
   });
 
   return (
-    <div style={{maxWidth:720,margin:'0 auto',fontFamily:'system-ui'}}>
-      <h2>Create News Item</h2>
-
-      <input
-        style={{width:'100%',padding:8,margin:'8px 0'}}
-        placeholder="Title"
-        value={title}
-        onChange={e=>setTitle(e.target.value)}
-      />
-
-      <textarea
-        rows={4}
-        style={{width:'100%',padding:8,marginBottom:8}}
-        placeholder="Body"
-        value={body}
-        onChange={e=>setBody(e.target.value)}
-      />
-
-      <div {...getRootProps()} style={{
-        border:'2px dashed #777',padding:28,textAlign:'center',
-        cursor:'pointer',marginBottom:16
-      }}>
-        <input {...getInputProps()} />
-        {isDragActive ? 'Drop files…' : 'Drag-drop or click (≤ 500 MB)'}
-      </div>
-
-      {rows.map(r=>(
-        <div key={r.file.name} style={card}>
-          <b>{r.file.name}</b> <small>({r.size})</small>
-          <div style={{background:'#eee',borderRadius:4,overflow:'hidden',margin:'6px 0'}}>
-            <div style={bar(r.pct)} />
+    <div className="news-upload-container">
+      <div className="news-upload-card">
+        <h2 className="news-upload-title">Create News Item</h2>
+        <form className="news-upload-form" onSubmit={e => { e.preventDefault(); uploadAll(); }}>
+          <div className="form-group">
+            <label className="news-upload-label" htmlFor="news-title">Title</label>
+            <input
+              id="news-title"
+              className="news-upload-input"
+              placeholder="Title"
+              value={title}
+              onChange={e=>setTitle(e.target.value)}
+            />
           </div>
-          <small>{r.status} — {r.pct}% · {r.speed} · ETA {fmtETA(r.eta)}</small>
-        </div>
-      ))}
-
-      <button
-        onClick={uploadAll}
-        disabled={busy || !rows.length || !title.trim()}
-        style={{padding:'8px 24px',fontSize:16}}
-      >
-        {busy ? 'Uploading…' : 'Publish'}
-      </button>
+          <div className="form-group">
+            <label className="news-upload-label" htmlFor="news-body">Body</label>
+            <textarea
+              id="news-body"
+              rows={4}
+              className="news-upload-textarea"
+              placeholder="Body"
+              value={body}
+              onChange={e=>setBody(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label className="news-upload-label">Attachments</label>
+            <div {...getRootProps()} className={`news-upload-dropzone${isDragActive ? ' active' : ''}`}>
+              <input {...getInputProps()} />
+              {isDragActive ? 'Drop files…' : 'Drag-drop or click (≤ 500 MB)'}
+            </div>
+          </div>
+          {rows.map(r=>(
+            <div key={r.file.name} className="news-upload-file-card">
+              <b>{r.file.name}</b> <small>({r.size})</small>
+              <div className="news-upload-progress-bg">
+                <div className="news-upload-progress-bar" style={{width: r.pct + '%', background: r.pct === 100 ? '#4caf50' : '#2196f3'}} />
+              </div>
+              <small>{r.status} — {r.pct}% · {r.speed} · ETA {fmtETA(r.eta)}</small>
+            </div>
+          ))}
+          <button
+            type="submit"
+            disabled={busy || !rows.length || !title.trim()}
+            className="news-upload-btn"
+          >
+            {busy ? 'Uploading…' : 'Publish'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
