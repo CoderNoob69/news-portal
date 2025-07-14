@@ -10,7 +10,9 @@ import NewsPage from './pages/NewsPage';
 import NewsUploadPage from './pages/NewsUploadPage';
 import UserNewsPage from './pages/UserNewsPage';
 import ProfilePage from './pages/ProfilePage';
+import NewsUpload from './pages/t';
 import DepartmentList from './components/Department/DepartmentList';
+
 import './App.css';
 
 function App() {
@@ -74,6 +76,7 @@ function App() {
               <Route path="/department/:department" element={<DepartmentNewsPage />} />
               <Route path="/news/:id" element={<NewsPage />} />
               <Route path="/post" element={<NewsUploadPage />} />
+              <Route path="/uploadee" element={<NewsUpload />} />
               <Route path="/my-posts" element={<UserNewsPage />} />
               <Route path="/profile" element={<ProfilePage onUserNameChange={handleUserNameChange} />} />
               {/* Fallback route */}

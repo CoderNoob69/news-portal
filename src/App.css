@@ -28,3 +28,8 @@
     padding: 10px;
   }
 }
+
+
+.upload-page { max-width: 700px; margin: 0 auto; }
+.dropzone { padding: 30px; border: 2px dashed #888; text-align: center; }
+progress { width: 60%; margin-left: 6px; }
