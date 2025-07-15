@@ -1,76 +1,81 @@
+// src/App.jsx
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar/Navbar';
-import Sidebar from './components/Navbar/Sidebar';
-import HomePage from './pages/HomePage';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation
+} from 'react-router-dom';
+
+import Navbar             from './components/Navbar/Navbar';
+import Sidebar            from './components/Navbar/Sidebar';
+import HomePage           from './pages/HomePage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import DepartmentNewsPage from './pages/DepartmentNewsPage';
-import NewsPage from './pages/NewsPage';
-import NewsUploadPage from './pages/NewsUploadPage';
-import UserNewsPage from './pages/UserNewsPage';
-import DepartmentList from './components/Department/DepartmentList';
+import NewsPage           from './pages/NewsPage';
+import NewsUploadPage     from './pages/NewsUploadPage';
+import UserNewsPage       from './pages/UserNewsPage';
+import DepartmentList     from './components/Department/DepartmentList';
 
 import './App.css';
 
-function App() {
+/* ── helper wrapper so we can access `useLocation` outside Routes ── */
+function AppShell() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [userName,   setUserName]   = useState('');
+  const location = useLocation();                    /* ← NEW */
 
-  // Check login status and userName on component mount
+  /* check login on mount + cross‑tab sync */
   useEffect(() => {
-    const loginStatus = localStorage.getItem('token') ? true : false;
-    setIsLoggedIn(loginStatus);
-
-    // Add event listener for storage changes (for multi-tab support)
-    const handleStorageChange = () => {
-      const updatedLoginStatus = localStorage.getItem('token') ? true : false
-      setIsLoggedIn(updatedLoginStatus);
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    const update = () =>
+      setIsLoggedIn(!!localStorage.getItem('token'));
+    update();
+    window.addEventListener('storage', update);
+    return () => window.removeEventListener('storage', update);
   }, []);
 
-  // Handler to update login state and userName
-  const handleLogin = (name) => {
-    setIsLoggedIn(true);
-    setUserName(name);
-  };
+  /* handlers */
+  const handleLogin  = name => { setIsLoggedIn(true); setUserName(name); };
+  const handleLogout = () => { localStorage.removeItem('token'); setIsLoggedIn(false); };
 
-  // Handler to logout
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-  };
-
+  /* ── render ── */
   return (
-    <Router>
-      <div className="app-layout">
-        {isLoggedIn && (
-          <Sidebar isLoggedIn={isLoggedIn} userName={userName} onLogout={handleLogout} />
-        )}
-        <div className="main-content-with-sidebar">
-          <Navbar />
-          <main className="main-content">
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<HomePage onLogin={handleLogin} />} />
-              {/* Protected routes */}
-              <Route path="/admin" element={<AdminDashboardPage />} />
-              <Route path="/departments" element={<DepartmentList />} />
-              <Route path="/department" element={<DepartmentNewsPage />} />
-              <Route path="/department/:department" element={<DepartmentNewsPage />} />
-              <Route path="/news/:deptShort/:id" element={<NewsPage />} />
-              <Route path="/post" element={<NewsUploadPage />} />
-              <Route path="/my-posts" element={<UserNewsPage />} />
-              {/* Fallback route */}
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </main>
-        </div>
+    <div className="app-layout">
+      {/* show sidebar IF logged in AND not on the login page ("/") */}
+      {isLoggedIn && location.pathname !== '/' && (
+        <Sidebar isLoggedIn={isLoggedIn} userName={userName} onLogout={handleLogout} />
+      )}
+
+      <div className="main-content-with-sidebar">
+        <Navbar />
+        <main className="main-content">
+          <Routes>
+            {/* Public route */}
+            <Route path="/"                               element={<HomePage onLogin={handleLogin} />} />
+
+            {/* Protected routes (assume auth check is inside each page component) */}
+            <Route path="/admin"                          element={<AdminDashboardPage />} />
+            <Route path="/departments"                    element={<DepartmentList />} />
+            <Route path="/department"                     element={<DepartmentNewsPage />} />
+            <Route path="/department/:department"         element={<DepartmentNewsPage />} />
+            <Route path="/news/:deptShort/:id"            element={<NewsPage />} />
+            <Route path="/post"                           element={<NewsUploadPage />} />
+            <Route path="/my-posts"                       element={<UserNewsPage />} />
+
+            {/* fallback */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </main>
       </div>
-    </Router>
+    </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <AppShell />
+    </Router>
+  );
+}
