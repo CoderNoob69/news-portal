@@ -1,262 +1,173 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FaCloudUploadAlt, FaLink, FaTrash } from 'react-icons/fa';
-import './News.css';
+import { useNavigate } from 'react-router-dom';   /* <-- keep here */
+import axios from 'axios';
+import '../News/News.css';
 
-const NewsUpload = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    files: [],
-    driveLinks: []
-  });
-  const [driveLink, setDriveLink] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+const MAX_SIZE = 500 * 1024 * 1024;
+const API_UPLOAD = 'http://localhost:4000/api/upload';
+const API_EVENTS = 'http://localhost:4000/api/events';
 
-  // Get user department from localStorage (in a real app, this would come from an API)
-  const userDepartment = localStorage.getItem('userBranch') || 'Computer Science and Engineering (CSE)';
-
-  const onDrop = useCallback(acceptedFiles => {
-    // In a real app, you would upload these files to a server or cloud storage
-    // For this demo, we'll just store them in the component state
-    const newFiles = acceptedFiles.map(file => ({
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      // In a real app, this would be a URL from your server or cloud storage
-      // For demo purposes, we'll create a local object URL
-      url: URL.createObjectURL(file)
-    }));
-
-    setFormData(prev => ({
-      ...prev,
-      files: [...prev.files, ...newFiles]
-    }));
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': [],
-      'application/pdf': ['.pdf'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'application/vnd.ms-excel': ['.xls'],
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-      'application/vnd.ms-powerpoint': ['.ppt'],
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
-      'text/plain': ['.txt']
-    }
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleAddDriveLink = () => {
-    if (!driveLink) return;
-    
-    // Basic validation for Google Drive link
-    if (!driveLink.includes('drive.google.com')) {
-      setError('Please enter a valid Google Drive link');
-      return;
-    }
-    
-    setFormData(prev => ({
-      ...prev,
-      driveLinks: [...prev.driveLinks, { url: driveLink, name: `Drive Link ${prev.driveLinks.length + 1}` }]
-    }));
-    setDriveLink('');
-    setError('');
-  };
-
-  const handleRemoveFile = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      files: prev.files.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleRemoveDriveLink = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      driveLinks: prev.driveLinks.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    
-    // Basic validation
-    if (!formData.title) {
-      setError('Title is required');
-      return;
-    }
-    
-    // In a real app, this would be an API call to save the news post
-    // For demo purposes, we'll just simulate a successful post
-    
-    // Create a news object
-    const newsItem = {
-      id: Date.now().toString(),
-      title: formData.title,
-      description: formData.description,
-      department: userDepartment,
-      files: formData.files,
-      driveLinks: formData.driveLinks,
-      date: new Date().toISOString(),
-      author: localStorage.getItem('userName') || 'Anonymous'
-    };
-    
-    // Get existing news from localStorage or initialize empty array
-    const existingNews = JSON.parse(localStorage.getItem('newsItems') || '[]');
-    
-    // Add new news item to the array
-    const updatedNews = [newsItem, ...existingNews];
-    
-    // Save back to localStorage
-    localStorage.setItem('newsItems', JSON.stringify(updatedNews));
-    
-    // Show success message
-    setSuccess('News posted successfully!');
-    
-    // Reset form
-    setFormData({
-      title: '',
-      description: '',
-      files: [],
-      driveLinks: []
-    });
-    
-    // Redirect to department page after a short delay
-    setTimeout(() => {
-      navigate('/department');
-    }, 2000);
-  };
-
-  return (
-    <div className="news-upload-container">
-      <div className="news-upload-card">
-        <h2>Post News for {userDepartment}</h2>
-        
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
-        
-        <form onSubmit={handleSubmit} className="news-upload-form">
-          <div className="form-group">
-            <label htmlFor="title">Title *</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Enter news title"
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Enter news description (optional)"
-              rows="4"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Upload Files</label>
-            <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
-              <input {...getInputProps()} />
-              <FaCloudUploadAlt className="upload-icon" />
-              {isDragActive ? (
-                <p>Drop the files here...</p>
-              ) : (
-                <p>Drag & drop files here, or click to select files</p>
-              )}
-              <em>Supports images, PDFs, Word, Excel, PowerPoint, and text files</em>
-            </div>
-          </div>
-          
-          {formData.files.length > 0 && (
-            <div className="uploaded-files">
-              <h3>Uploaded Files</h3>
-              <ul className="file-list">
-                {formData.files.map((file, index) => (
-                  <li key={index} className="file-item">
-                    <span className="file-name">{file.name}</span>
-                    <button 
-                      type="button" 
-                      className="remove-file-btn"
-                      onClick={() => handleRemoveFile(index)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          <div className="form-group">
-            <label>Add Google Drive Links</label>
-            <div className="drive-link-input">
-              <input
-                type="text"
-                value={driveLink}
-                onChange={(e) => setDriveLink(e.target.value)}
-                placeholder="Paste Google Drive link here"
-              />
-              <button 
-                type="button" 
-                className="add-link-btn"
-                onClick={handleAddDriveLink}
-              >
-                <FaLink /> Add
-              </button>
-            </div>
-          </div>
-          
-          {formData.driveLinks.length > 0 && (
-            <div className="drive-links">
-              <h3>Added Drive Links</h3>
-              <ul className="file-list">
-                {formData.driveLinks.map((link, index) => (
-                  <li key={index} className="file-item">
-                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="file-name">
-                      {link.name}
-                    </a>
-                    <button 
-                      type="button" 
-                      className="remove-file-btn"
-                      onClick={() => handleRemoveDriveLink(index)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          <button type="submit" className="submit-btn">Post News</button>
-        </form>
-      </div>
-    </div>
-  );
+/* seconds → "Hh Mm Ss" */
+const fmtETA = sec => {
+    if (sec === '--' || sec === null || isNaN(sec)) return '--';
+    const s = Math.max(0, Math.round(sec));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const r = s % 60;
+    const out = [];
+    if (h) out.push(`${h}h`);
+    if (m) out.push(`${m}m`);
+    if (!h && !m) out.push(`${r}s`);
+    else if (r) out.push(`${r}s`);
+    return out.join(' ');
 };
 
-export default NewsUpload;
+export default function NewsUpload() {
+    /* ── navigation hook must be here ── */         /* ➤ */
+    const navigate = useNavigate();                  /* ➤ */
+
+    const [title, setTitle] = useState('');
+    const [body, setBody] = useState('');
+    const [busy, setBusy] = useState(false);
+    const [rows, setRows] = useState([]);
+    const [newsId, setNewsId] = useState(null);
+
+    /* dropzone */
+    const onDrop = useCallback((accepted, rejected) => {
+        if (rejected.length) alert('Files > 500 MB were skipped.');
+        setRows(prev => [
+            ...prev,
+            ...accepted.map(f => ({
+                file: f,
+                size: (f.size / 1024 / 1024).toFixed(1) + ' MB',
+                pct: 0,
+                status: 'waiting',
+                speed: '--',
+                eta: '--'
+            }))
+        ]);
+    }, []);
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        multiple: true, maxSize: MAX_SIZE, onDrop
+    });
+
+    /* SSE progress */
+    useEffect(() => {
+        const es = new EventSource(API_EVENTS);
+        es.onmessage = e => {
+            const { file, pct, speed, eta } = JSON.parse(e.data);
+            setRows(rs => rs.map(r =>
+                r.file.name === file
+                    ? { ...r, pct, status: 'server ⇢ Drive', speed: speed + ' MB/s', eta }
+                    : r
+            ));
+        };
+        return () => es.close();
+    }, []);
+
+    /* sequential upload */
+    const uploadAll = async () => {
+        if (!title.trim() || rows.length === 0) return;
+        setBusy(true);
+
+        let currentId = newsId;
+        try {
+            for (const row of rows) {
+                setRows(rs => rs.map(r =>
+                    r.file === row.file ? { ...r, status: 'browser ⇢ server' } : r
+                ));
+
+                const fd = new FormData();
+                fd.append('title', title);
+                fd.append('body', body);
+                fd.append('files', row.file);
+                if (currentId) fd.append('newsId', currentId);
+
+                const start = Date.now();
+                const { data } = await axios.post(API_UPLOAD, fd, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                    onUploadProgress: ev => {
+                        if (!ev.total) return;
+                        const pct = Math.round((ev.loaded / ev.total) * 100);
+                        const secs = (Date.now() - start) / 1000;
+                        const speed = secs ? (ev.loaded / 1024 / 1024 / secs).toFixed(2) + ' MB/s' : '--';
+                        setRows(rs => rs.map(r =>
+                            r.file === row.file ? { ...r, pct, speed, eta: '--' } : r
+                        ));
+                    }
+                });
+                if (!currentId) { currentId = data.newsId; setNewsId(currentId); }
+            }
+
+            alert('News created successfully!');
+            navigate('/admin');            // redirect on success
+
+        } catch (err) {
+            console.error(err);
+            alert('Upload failed.');
+            navigate(0);                   // reload page on failure
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    /* inline styles */
+    const card = { border: '1px solid #ccc', borderRadius: 6, padding: 12, marginBottom: 12 };
+    const bar = p => ({
+        width: p + '%', height: 8, borderRadius: 4,
+        background: p === 100 ? '#4caf50' : '#2196f3', transition: 'width .2s linear'
+    });
+
+    return (
+        <div className="news-upload-container">
+            <div className="news-upload-card">
+                <h2 className="news-upload-title">Create News Item</h2>
+
+                <form className="news-upload-form" onSubmit={e => { e.preventDefault(); uploadAll(); }}>
+                    <div className="form-group">
+                        <label className="news-upload-label">Title</label>
+                        <input
+                            className="news-upload-input" placeholder="Title"
+                            value={title} onChange={e => setTitle(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="news-upload-label">Body</label>
+                        <textarea
+                            rows={4} className="news-upload-textarea" placeholder="Body"
+                            value={body} onChange={e => setBody(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="news-upload-label">Attachments</label>
+                        <div {...getRootProps()} className={`news-upload-dropzone${isDragActive ? ' active' : ''}`}>
+                            <input {...getInputProps()} />
+                            {isDragActive ? 'Drop files…' : 'Drag‑drop or click (≤ 500 MB)'}
+                        </div>
+                    </div>
+
+                    {rows.map(r => (
+                        <div key={r.file.name} style={card}>
+                            <b>{r.file.name}</b> <small>({r.size})</small>
+                            <div className="news-upload-progress-bg">
+                                <div style={bar(r.pct)} />
+                            </div>
+                            <small>{r.status} — {r.pct}% · {r.speed} · ETA {fmtETA(r.eta)}</small>
+                        </div>
+                    ))}
+
+                    <button
+                        type="submit"
+                        disabled={busy || !rows.length || !title.trim()}
+                        className="news-upload-btn"
+                    >
+                        {busy ? 'Uploading…' : 'Publish'}
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+}

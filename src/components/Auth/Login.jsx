@@ -1,53 +1,41 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Auth.css';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
+const API_LOGIN = 'http://localhost:4000/api/login';
+
 const Login = ({ onLogin }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [error,    setError]    = useState('');
+  const [showPwd,  setShowPwd]  = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  /* ---------------------- input change ---------------------- */
+  const handleChange = e =>
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  /* ---------------------- submit ---------------------------- */
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    
-    // Basic validation
-    if (!formData.email || !formData.password) {
+
+    if (!formData.username || !formData.password) {
       setError('All fields are required');
       return;
     }
 
-    // In a real app, this would be an API call to authenticate
-    // For demo purposes, we'll just simulate a successful login
-    console.log('Login attempt with:', formData);
-    
-    // Mock successful login
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', formData.email);
-    
-    // Set a default user name based on the email
-    const userName = formData.email.split('@')[0];
-    localStorage.setItem('userName', userName);
-    localStorage.setItem('userDepartment', 'Computer Science');
-    
-    // Call onLogin to update App state
-    if (onLogin) onLogin(userName);
-    
-    // Redirect to admin page after login
-    navigate('/admin');
+    try {
+      const { data } = await axios.post(API_LOGIN, formData);
+      localStorage.setItem('token', data.token);          // <— save JWT
+      /* optional: decode token here to grab dept / access */
+
+      if (onLogin) onLogin(formData.username);
+      navigate('/admin');
+    } catch {
+      setError('Invalid credentials');
+    }
   };
 
   return (
@@ -55,27 +43,29 @@ const Login = ({ onLogin }) => {
       <div className="auth-form-container">
         <h2>Login to NIT Raipur News Portal</h2>
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit} className="auth-form">
+          {/* -------- username -------- */}
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="username">Username</label>
             <span className="input-icon"><FaEnvelope /></span>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="Enter your username"
               required
             />
           </div>
-          
+
+          {/* -------- password -------- */}
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <span className="input-icon"><FaLock /></span>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPwd ? 'text' : 'password'}
               id="password"
               name="password"
               value={formData.password}
@@ -87,20 +77,16 @@ const Login = ({ onLogin }) => {
             <button
               type="button"
               className="toggle-password-btn"
-              onClick={() => setShowPassword((prev) => !prev)}
+              onClick={() => setShowPwd(p => !p)}
               tabIndex={-1}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-label={showPwd ? 'Hide password' : 'Show password'}
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              {showPwd ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
-          
+
           <button type="submit" className="auth-button">Login</button>
         </form>
-        
-        <div className="auth-links">
-          <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
-        </div>
       </div>
     </div>
   );

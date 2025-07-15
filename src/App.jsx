@@ -3,14 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Navbar from './components/Navbar/Navbar';
 import Sidebar from './components/Navbar/Sidebar';
 import HomePage from './pages/HomePage';
-import SignUpPage from './pages/SignUpPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import DepartmentNewsPage from './pages/DepartmentNewsPage';
 import NewsPage from './pages/NewsPage';
 import NewsUploadPage from './pages/NewsUploadPage';
 import UserNewsPage from './pages/UserNewsPage';
-import ProfilePage from './pages/ProfilePage';
-import NewsUpload from './pages/t';
 import DepartmentList from './components/Department/DepartmentList';
 
 import './App.css';
@@ -21,15 +18,13 @@ function App() {
 
   // Check login status and userName on component mount
   useEffect(() => {
-    const loginStatus = localStorage.getItem('isLoggedIn') === 'true';
+    const loginStatus = localStorage.getItem('token') ? true : false;
     setIsLoggedIn(loginStatus);
-    setUserName(localStorage.getItem('userName') || '');
 
     // Add event listener for storage changes (for multi-tab support)
     const handleStorageChange = () => {
-      const updatedLoginStatus = localStorage.getItem('isLoggedIn') === 'true';
+      const updatedLoginStatus = localStorage.getItem('token') ? true : false
       setIsLoggedIn(updatedLoginStatus);
-      setUserName(localStorage.getItem('userName') || '');
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -44,16 +39,8 @@ function App() {
 
   // Handler to logout
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userName');
+    localStorage.removeItem('token');
     setIsLoggedIn(false);
-    setUserName('');
-  };
-
-  // Handler to update userName from profile changes
-  const handleUserNameChange = (newName) => {
-    setUserName(newName);
   };
 
   return (
@@ -68,17 +55,14 @@ function App() {
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<HomePage onLogin={handleLogin} />} />
-              <Route path="/signup" element={<SignUpPage onLogin={handleLogin} />} />
               {/* Protected routes */}
               <Route path="/admin" element={<AdminDashboardPage />} />
               <Route path="/departments" element={<DepartmentList />} />
               <Route path="/department" element={<DepartmentNewsPage />} />
               <Route path="/department/:department" element={<DepartmentNewsPage />} />
-              <Route path="/news/:id" element={<NewsPage />} />
+              <Route path="/news/:deptShort/:id" element={<NewsPage />} />
               <Route path="/post" element={<NewsUploadPage />} />
-              <Route path="/uploadee" element={<NewsUpload />} />
               <Route path="/my-posts" element={<UserNewsPage />} />
-              <Route path="/profile" element={<ProfilePage onUserNameChange={handleUserNameChange} />} />
               {/* Fallback route */}
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>

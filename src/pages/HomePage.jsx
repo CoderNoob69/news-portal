@@ -7,7 +7,7 @@ const HomePage = ({ onLogin }) => {
   
   // Check if user is already logged in
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const isLoggedIn = localStorage.getItem('token') ? true : false
     if (isLoggedIn) {
       // Redirect to admin page if already logged in
       navigate('/admin');

@@ -9,7 +9,7 @@ const AdminDashboardPage = ({ isLoggedIn, userName, onLogout }) => {
 
   // Check if user is logged in
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const isLoggedIn = localStorage.getItem('token') ? true : false
     if (!isLoggedIn) {
       // Redirect to login page if not logged in
       navigate('/');
