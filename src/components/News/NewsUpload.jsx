@@ -113,7 +113,6 @@ export default function NewsUpload() {
     };
 
     /* inline styles */
-    const card = { border: '1px solid #ccc', borderRadius: 6, padding: 12, marginBottom: 12 };
     const bar = p => ({
         width: p + '%', height: 8, borderRadius: 4,
         background: p === 100 ? '#4caf50' : '#2196f3', transition: 'width .2s linear'
@@ -150,14 +149,53 @@ export default function NewsUpload() {
                     </div>
 
                     {rows.map(r => (
-                        <div key={r.file.name} style={card}>
+                        <div
+                            key={r.file.name}
+                            style={{
+                                border: '1.5px solid #e3f0ff',
+                                borderRadius: '8px',
+                                padding: '1rem 1.3rem',
+                                marginBottom: '1rem',
+                                background: '#f8fbff',
+                                boxShadow: '0 2px 8px rgba(21, 101, 192, 0.06)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.4rem',
+                                color: 'black',
+                            }}
+                        >
                             <b>{r.file.name}</b> <small>({r.size})</small>
-                            <div className="news-upload-progress-bg">
-                                <div style={bar(r.pct)} />
+                            <div
+                                style={{
+                                    background: '#eee',
+                                    borderRadius: '4px',
+                                    overflow: 'hidden',
+                                    margin: '6px 0 10px 0',
+                                    height: '10px',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        width: `${r.pct}%`,
+                                        height: '10px',
+                                        borderRadius: '4px',
+                                        background: r.pct === 100 ? '#4caf50' : '#2196f3',
+                                        transition: 'width 0.2s linear',
+                                    }}
+                                />
                             </div>
-                            <small>{r.status} — {r.pct}% · {r.speed} · ETA {fmtETA(r.eta)}</small>
+                            <small
+                                style={{
+                                    color: '#143a6d',
+                                    fontSize: '0.94rem',
+                                    fontWeight: 500,
+                                }}
+                            >
+                                {r.status} — {r.pct}% · {r.speed} · ETA {fmtETA(r.eta)}
+                            </small>
                         </div>
                     ))}
+
 
                     <button
                         type="submit"
