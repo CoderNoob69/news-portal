@@ -49,6 +49,14 @@ const Sidebar = ({ onLogout }) => {
         <FaHome/> Home
       </NavLink>
 
+      {/* Show Manage Accounts only for FULL_ADMIN_1 with full access */}
+      {me.username === 'FULL_ADMIN_1' && me.access === 'full' && (
+        <NavLink to="/accounts"
+          className={({isActive})=>'sidebar-link'+(isActive?' active':'')}>
+          <FaUser/> Manage Accounts
+        </NavLink>
+      )}
+
       {me.access === 'full' ? (
         <NavLink to="/departments"
           className={({isActive})=>'sidebar-link'+(isActive?' active':'')}>

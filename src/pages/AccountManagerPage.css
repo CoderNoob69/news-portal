@@ -1,0 +1,173 @@
+.account-manager-container {
+  max-width: 1000px;
+  margin: 2.5rem auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(21,101,192,0.10);
+  padding: 2.5rem 2.5rem 2.5rem 2.5rem;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.account-manager-title {
+  text-align: center;
+  color: #1a237e;
+  margin-bottom: 2.2rem;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.account-manager-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.account-manager-form {
+  background: #c5deff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.08);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  flex: 1 1 320px;
+  min-width: 280px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.account-manager-form-title {
+  color: #1976d2;
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin-bottom: 1.1rem;
+  text-align: left;
+}
+
+.account-manager-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.account-manager-input {
+  padding: 0.85rem 1.1rem;
+  border: 1.5px solid #dbeafe;
+  border-radius: 7px;
+  font-size: 1rem;
+  background: #f6faff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  outline: none;
+  color: #000;
+  box-shadow: 0 1px 3px rgba(21,101,192,0.04);
+}
+.account-manager-input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px #e3f0ff;
+  background: #fff;
+}
+
+.account-manager-btn {
+  margin-top: 0.5rem;
+  padding: 0.95rem 0;
+  font-size: 1.13rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #1976d2 0%, #1565c0 100%);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.08);
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.2px;
+}
+.account-manager-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.account-manager-btn:hover:not(:disabled) {
+  background: linear-gradient(90deg, #1565c0 0%, #1976d2 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 16px rgba(21,101,192,0.13);
+}
+
+.account-manager-msg-success {
+  color: #2e7d32;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+.account-manager-msg-error {
+  color: #d32f2f;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+
+.account-manager-access-denied {
+  padding: 2.5rem;
+  text-align: center;
+  color: #d32f2f;
+  font-size: 1.2rem;
+  background: #fff0f0;
+  border-radius: 12px;
+  margin: 3rem auto;
+  max-width: 500px;
+  box-shadow: 0 2px 8px rgba(211,47,47,0.08);
+}
+
+.account-manager-userlist-section {
+  margin-top: 2.5rem;
+}
+.account-manager-userlist-wrapper {
+  overflow-x: auto;
+  background: #f8fbff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.08);
+  padding: 1.5rem 1rem;
+}
+.account-manager-userlist {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+.account-manager-userlist th, .account-manager-userlist td {
+  padding: 0.7rem 1.1rem;
+  text-align: left;
+  color: #000000;
+}
+.account-manager-userlist th {
+  background: #e3f0ff;
+  color: #1a237e;
+  font-weight: 700;
+  border-bottom: 2px solid #b3c6e6;
+}
+.account-manager-userlist tr:nth-child(even) {
+  background: #f6faff;
+}
+.account-manager-userlist tr:hover {
+  background: #e3f0ff;
+}
+
+@media (max-width: 900px) {
+  .account-manager-container {
+    padding: 1.2rem 0.7rem 1.5rem 0.7rem;
+    max-width: 98vw;
+  }
+  .account-manager-cards {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .account-manager-container {
+    padding: 0.5rem;
+  }
+  .account-manager-form {
+    padding: 0.7rem 0.2rem 1rem 0.2rem;
+  }
+  .account-manager-title {
+    font-size: 1.3rem;
+  }
+} 

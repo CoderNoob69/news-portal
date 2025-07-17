@@ -17,6 +17,7 @@ import NewsPage from './pages/NewsPage';
 import NewsUploadPage from './pages/NewsUploadPage';
 import UserNewsPage from './pages/UserNewsPage';
 import DepartmentList from './components/Department/DepartmentList';
+import AccountManagerPage from './pages/AccountManagerPage';
 
 import './App.css';
 
@@ -69,6 +70,9 @@ function AppShell() {
             <Route path="/news/:deptShort/:id" element={<NewsPage />} />
             <Route path="/post" element={<NewsUploadPage />} />
             <Route path="/my-posts" element={<UserNewsPage />} />
+
+            {/* Admin-only account management */}
+            <Route path="/accounts" element={<AccountManagerPage />} />
 
             {/* fallback */}
             <Route path="*" element={<Navigate to="/" />} />
