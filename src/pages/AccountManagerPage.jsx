@@ -1,12 +1,137 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './AccountManagerPage.css';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableBody from '@mui/material/TableBody';
+import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 
 const MOCK_USERS = [
   { username: 'FULL_ADMIN_1', deptShort: 'ADMIN', deptLong: 'Admin', access: 'full' },
   { username: 'user1', deptShort: 'CSE', deptLong: 'Computer Science', access: 'limited' },
   { username: 'user2', deptShort: 'IT', deptLong: 'Information Technology', access: 'limited' },
 ];
+
+export function CreateAccountForm({ users, setUsers }) {
+  const [createForm, setCreateForm] = useState({ username: '', password: '', deptShort: '', deptLong: '', access: 'limited' });
+  const [createMsg, setCreateMsg] = useState('');
+  const handleCreateChange = e => {
+    setCreateForm(f => ({ ...f, [e.target.name]: e.target.value }));
+    setCreateMsg('');
+  };
+  const handleCreate = e => {
+    e.preventDefault();
+    setCreateMsg('');
+    if (!createForm.username || !createForm.password || !createForm.deptShort || !createForm.deptLong) {
+      setCreateMsg('All fields are required.');
+      return;
+    }
+    if (users.some(u => u.username === createForm.username)) {
+      setCreateMsg('Username already exists.');
+      return;
+    }
+    setUsers(us => [...us, { ...createForm }]);
+    setCreateMsg('Account created successfully!');
+    setCreateForm({ username: '', password: '', deptShort: '', deptLong: '', access: 'limited' });
+  };
+  return (
+    <Card elevation={2} sx={{ borderRadius: 3 }}>
+      <CardContent>
+        <Typography variant="h5" color="primary.dark" sx={{ mb: 2, fontWeight: 700 }}>Create New Account</Typography>
+        <Box component="form" onSubmit={handleCreate} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField label="Username" name="username" value={createForm.username} onChange={handleCreateChange} fullWidth size="small" />
+          <TextField label="Password" name="password" type="password" value={createForm.password} onChange={handleCreateChange} fullWidth size="small" />
+          <TextField label="Department Short (e.g. CSE)" name="deptShort" value={createForm.deptShort} onChange={handleCreateChange} fullWidth size="small" />
+          <TextField label="Department Long (e.g. Computer Science)" name="deptLong" value={createForm.deptLong} onChange={handleCreateChange} fullWidth size="small" />
+          <Select name="access" value={createForm.access} onChange={handleCreateChange} size="small" fullWidth>
+            <MenuItem value="limited">Limited</MenuItem>
+            <MenuItem value="full">Full (Admin)</MenuItem>
+          </Select>
+          <Button type="submit" variant="contained" color="primary" sx={{ fontWeight: 700, borderRadius: 2, mt: 1 }}>Create Account</Button>
+          {createMsg && <Alert severity={createMsg.includes('success') ? 'success' : 'error'} sx={{ mt: 1 }}>{createMsg}</Alert>}
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function CurrentUsersTable({ users }) {
+  return (
+    <Card elevation={2} sx={{ borderRadius: 3 }}>
+      <CardContent>
+        <Typography variant="h5" color="primary.dark" sx={{ mb: 2, fontWeight: 700 }}>Current Users</Typography>
+        <Table sx={{ minWidth: 400 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Username</TableCell>
+              <TableCell>Department</TableCell>
+              <TableCell>Access</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map(u => (
+              <TableRow key={u.username}>
+                <TableCell>{u.username}</TableCell>
+                <TableCell>{u.deptLong} ({u.deptShort})</TableCell>
+                <TableCell>{u.access === 'full' ? 'Admin' : 'Limited'}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ChangePasswordForm({ users, setUsers }) {
+  const [changeForm, setChangeForm] = useState({ username: '', newPassword: '' });
+  const [changeMsg, setChangeMsg] = useState('');
+  const handleChangePwdChange = e => {
+    setChangeForm(f => ({ ...f, [e.target.name]: e.target.value }));
+    setChangeMsg('');
+  };
+  const handleChangePwd = e => {
+    e.preventDefault();
+    setChangeMsg('');
+    if (!changeForm.username || !changeForm.newPassword) {
+      setChangeMsg('Select user and enter new password.');
+      return;
+    }
+    if (!users.some(u => u.username === changeForm.username)) {
+      setChangeMsg('User not found.');
+      return;
+    }
+    // Optionally update user password in setUsers here if needed
+    setChangeMsg('Password changed successfully!');
+    setChangeForm({ username: '', newPassword: '' });
+  };
+  return (
+    <Card elevation={2} sx={{ borderRadius: 3 }}>
+      <CardContent>
+        <Typography variant="h5" color="primary.dark" sx={{ mb: 2, fontWeight: 700 }}>Change User Password</Typography>
+        <Box component="form" onSubmit={handleChangePwd} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Select name="username" value={changeForm.username} onChange={handleChangePwdChange} size="small" fullWidth displayEmpty>
+            <MenuItem value="">Select User</MenuItem>
+            {users.map(u => <MenuItem key={u.username} value={u.username}>{u.username}</MenuItem>)}
+          </Select>
+          <TextField label="New Password" name="newPassword" type="password" value={changeForm.newPassword} onChange={handleChangePwdChange} fullWidth size="small" />
+          <Button type="submit" variant="contained" color="primary" sx={{ fontWeight: 700, borderRadius: 2, mt: 1 }}>Change Password</Button>
+          {changeMsg && <Alert severity={changeMsg.includes('success') ? 'success' : 'error'} sx={{ mt: 1 }}>{changeMsg}</Alert>}
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function AccountManagerPage() {
   const navigate = useNavigate();
@@ -17,22 +142,17 @@ export default function AccountManagerPage() {
   const [changeForm, setChangeForm] = useState({ username: '', newPassword: '' });
   const [changeMsg, setChangeMsg] = useState('');
 
-  // Simulate fetching current user info (replace with real API call)
   useEffect(() => {
-    // In real app, fetch from /api/data/user
     const token = localStorage.getItem('token');
     if (!token) { navigate('/'); return; }
-    // Simulate admin user
     setMe({ username: 'FULL_ADMIN_1', access: 'full' });
   }, [navigate]);
 
-  // Only allow FULL_ADMIN_1 with full access
   if (!me) return null;
   if (!(me.username === 'FULL_ADMIN_1' && me.access === 'full')) {
-    return <div className="account-manager-access-denied">Access denied. Only FULL_ADMIN_1 can manage accounts.</div>;
+    return <Alert severity="error" sx={{ mt: 4, maxWidth: 500, mx: 'auto' }}>Access denied. Only FULL_ADMIN_1 can manage accounts.</Alert>;
   }
 
-  // Handlers for create account
   const handleCreateChange = e => {
     setCreateForm(f => ({ ...f, [e.target.name]: e.target.value }));
     setCreateMsg('');
@@ -53,7 +173,6 @@ export default function AccountManagerPage() {
     setCreateForm({ username: '', password: '', deptShort: '', deptLong: '', access: 'limited' });
   };
 
-  // Handlers for change password
   const handleChangePwdChange = e => {
     setChangeForm(f => ({ ...f, [e.target.name]: e.target.value }));
     setChangeMsg('');
@@ -74,63 +193,19 @@ export default function AccountManagerPage() {
   };
 
   return (
-    <div className="account-manager-container">
-      <h2 className="account-manager-title">Account Management</h2>
-      <div className="account-manager-cards">
-        {/* Create Account */}
-        <form onSubmit={handleCreate} className="account-manager-form">
-          <h3 className="account-manager-form-title">Create New Account</h3>
-          <div className="account-manager-form-fields">
-            <input name="username" placeholder="Username" value={createForm.username} onChange={handleCreateChange} className="account-manager-input" />
-            <input name="password" type="password" placeholder="Password" value={createForm.password} onChange={handleCreateChange} className="account-manager-input" />
-            <input name="deptShort" placeholder="Department Short (e.g. CSE)" value={createForm.deptShort} onChange={handleCreateChange} className="account-manager-input" />
-            <input name="deptLong" placeholder="Department Long (e.g. Computer Science)" value={createForm.deptLong} onChange={handleCreateChange} className="account-manager-input" />
-            <select name="access" value={createForm.access} onChange={handleCreateChange} className="account-manager-input">
-              <option value="limited">Limited</option>
-              <option value="full">Full (Admin)</option>
-            </select>
-            <button type="submit" className="account-manager-btn">Create Account</button>
-            {createMsg && <div className={createMsg.includes('success') ? 'account-manager-msg-success' : 'account-manager-msg-error'}>{createMsg}</div>}
-          </div>
-        </form>
-        {/* Change Password */}
-        <form onSubmit={handleChangePwd} className="account-manager-form">
-          <h3 className="account-manager-form-title">Change User Password</h3>
-          <div className="account-manager-form-fields">
-            <select name="username" value={changeForm.username} onChange={handleChangePwdChange} className="account-manager-input">
-              <option value="">Select User</option>
-              {users.map(u => <option key={u.username} value={u.username}>{u.username}</option>)}
-            </select>
-            <input name="newPassword" type="password" placeholder="New Password" value={changeForm.newPassword} onChange={handleChangePwdChange} className="account-manager-input" />
-            <button type="submit" className="account-manager-btn">Change Password</button>
-            {changeMsg && <div className={changeMsg.includes('success') ? 'account-manager-msg-success' : 'account-manager-msg-error'}>{changeMsg}</div>}
-          </div>
-        </form>
-      </div>
-      {/* User List Table */}
-      <div className="account-manager-userlist-section">
-        <h3 className="account-manager-form-title">Current Users</h3>
-        <div className="account-manager-userlist-wrapper">
-          <table className="account-manager-userlist">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Department</th>
-                <th>Access</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u.username}>
-                  <td>{u.username}</td>
-                  <td>{u.deptLong} ({u.deptShort})</td>
-                  <td>{u.access === 'full' ? 'Admin' : 'Limited'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <Box sx={{ maxWidth: 900, mx: 'auto', mt: 4, p: { xs: 1, md: 3 } }}>
+      <Typography variant="h2" color="primary" sx={{ mb: 3, fontWeight: 800, fontSize: { xs: '1.3rem', md: '2rem' } }}>
+        Account Management
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={6}>
+          <CreateAccountForm users={users} setUsers={setUsers} />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <ChangePasswordForm users={users} setUsers={setUsers} />
+        </Grid>
+      </Grid>
+      <CurrentUsersTable users={users} />
+    </Box>
   );
 } 

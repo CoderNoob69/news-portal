@@ -6,21 +6,24 @@ import {
   FaArrowLeft, FaCalendarAlt, FaBuilding,
   FaFileImage, FaFilePdf, FaFileVideo, FaFileAlt, FaGoogleDrive
 } from 'react-icons/fa';
-import './News.css';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 
 const API_NEWS = 'http://localhost:4000/api/data/news';   // base path to backend
 
 export default function NewsDetail() {
-  /* params now include deptShort AND id */
   const { deptShort, id } = useParams();
   const location  = useLocation();
   const navigate  = useNavigate();
 
   const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(true);   // true ⇢ show spinner
-  const [error,   setError]   = useState('');     // non‑empty ⇢ show message
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState('');
 
-  /* fetch on mount / id change */
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/'); return; }
@@ -37,7 +40,6 @@ export default function NewsDetail() {
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
-  /* helpers */
   const fmtDate = iso =>
     new Date(iso).toLocaleDateString(undefined,
       { year:'numeric', month:'long', day:'numeric' });
@@ -50,82 +52,77 @@ export default function NewsDetail() {
     return <FaFileAlt style={{color:'#1a237e', marginRight:6}}/>;
   };
 
-  /* decide back‑link */
   const backTo   = location.state?.fromAdmin
     ? '/admin'
     : `/department/${deptShort ?? ''}`;
-  const backText = location.state?.fromAdmin ? 'Back to Home' : 'Back to News';
+  const backText = location.state?.fromAdmin ? 'Back to Dashboard' : 'Back to News';
 
-  /* ---------- render states ---------- */
   if (loading) return (
-    <div className="news-detail-container">
-      <div className="loading-spinner">Loading…</div>
-    </div>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+      <Typography variant="h6" color="primary">Loading…</Typography>
+    </Box>
   );
 
   if (error || !item) return (
-    <div className="news-detail-container">
-      <div className="error-message">{error || 'News item not found'}</div>
-      <Link to={backTo} className="back-link"><FaArrowLeft/> {backText}</Link>
-    </div>
+    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6 }}>
+      <Alert severity="error" sx={{ mb: 3 }}>{error || 'News item not found'}</Alert>
+      <Button variant="outlined" color="primary" component={Link} to={backTo} startIcon={<FaArrowLeft />}>
+        {backText}
+      </Button>
+    </Box>
   );
 
-  /* ---------- normal render ---------- */
   return (
-    <div className="news-detail-container">
-      <div className="news-detail-card">
-        <Link to={backTo} className="back-link">
-          <FaArrowLeft/> {backText}
-        </Link>
-
-        <div className="news-header">
-          <h1 className="news-title">{item.title}</h1>
-          <div className="news-meta">
-            <div className="meta-item">
-              <FaCalendarAlt/>
-              <span>{fmtDate(item.createdAt)}</span>
-            </div>
-            <div className="meta-item">
-              <FaBuilding/>
-              <span>{item.department}</span>
-            </div>
-          </div>
-        </div>
-
-        {item.body && (
-          <div className="news-description"><p>{item.body}</p></div>
-        )}
-
-        {item.files?.length > 0 && (
-          <div className="news-attachments">
-            <h3>Attachments</h3>
-            <ul className="attachment-list">
-              {item.files.map((f,i)=>(
-                <li key={i}
-                    className="attachment-item"
-                    style={{display:'flex',alignItems:'center',listStyle:'none',marginBottom:2}}>
-                  {iconFor(f.mimeType)}
-                  <a href={f.embedLink} target="_blank" rel="noopener noreferrer"
-                     style={{color:'#1a237e', textDecoration:'underline'}}>
-                    {f.originalName || `File ${i+1}`}
-                  </a>
-                </li>
-              ))}
-              {item.driveLinks?.map((l,i)=>(
-                <li key={`link-${i}`}
-                    className="attachment-item"
-                    style={{display:'flex',alignItems:'center',listStyle:'none',marginBottom:2}}>
-                  <FaGoogleDrive style={{color:'#0f9d58', marginRight:6}}/>
-                  <a href={l.url} target="_blank" rel="noopener noreferrer"
-                     style={{color:'#1a237e', textDecoration:'underline'}}>
-                    {l.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    </div>
+    <Box sx={{
+      minHeight: '100vh',
+      width: '100vw',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #8e24aa 0%, #1976d2 100%)',
+      p: 0,
+      m: 0,
+    }}>
+      <Card elevation={8} sx={{ borderRadius: 2, width: '100%', maxWidth: 900, boxShadow: 8, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
+          <Button variant="outlined" color="primary" component={Link} to={backTo} startIcon={<FaArrowLeft />} sx={{ mb: 2, fontWeight: 700, borderRadius: 2 }}>
+            {backText}
+          </Button>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h3" color="primary" sx={{ fontWeight: 800, mb: 1, letterSpacing: 0.5, fontSize: { xs: '2rem', sm: '2.7rem' } }}>{item.title}</Typography>
+            <Box sx={{ display: 'flex', gap: 3, mb: 1 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.7, fontWeight: 600 }}><FaCalendarAlt /> {fmtDate(item.createdAt)}</Typography>
+              <Typography variant="body2" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 0.7, fontWeight: 700 }}><FaBuilding /> {item.department}</Typography>
+            </Box>
+          </Box>
+          {item.body && (
+            <Typography variant="body1" color="text.primary" sx={{ mb: 2, fontSize: '1.13rem', lineHeight: 1.7 }}>{item.body}</Typography>
+          )}
+          {item.files?.length > 0 && (
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="h6" color="primary.dark" sx={{ mb: 1, fontWeight: 700 }}>Attachments</Typography>
+              <Box component="ul" sx={{ pl: 0, m: 0, listStyle: 'none' }}>
+                {item.files.map((f,i)=>(
+                  <Box component="li" key={i} sx={{ display: 'flex', alignItems: 'center', mb: 1, background: '#f8fbff', borderRadius: 2, boxShadow: 1, p: 1.2, pr: 2 }}>
+                    {iconFor(f.mimeType)}
+                    <a href={f.embedLink} target="_blank" rel="noopener noreferrer" style={{color:'#1976d2', textDecoration:'underline', fontWeight:600}}>
+                      {f.originalName || `File ${i+1}`}
+                    </a>
+                  </Box>
+                ))}
+                {item.driveLinks?.map((l,i)=>(
+                  <Box component="li" key={`link-${i}`} sx={{ display: 'flex', alignItems: 'center', mb: 1, background: '#f8fbff', borderRadius: 2, boxShadow: 1, p: 1.2, pr: 2 }}>
+                    <FaGoogleDrive style={{color:'#0f9d58', marginRight:6}}/>
+                    <a href={l.url} target="_blank" rel="noopener noreferrer" style={{color:'#1976d2', textDecoration:'underline', fontWeight:600}}>
+                      {l.name}
+                    </a>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+    </Box>
   );
 }
