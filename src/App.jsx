@@ -18,6 +18,7 @@ import NewsUploadPage from './pages/NewsUploadPage';
 import UserNewsPage from './pages/UserNewsPage';
 import DepartmentList from './components/Department/DepartmentList';
 import AccountManagerPage from './pages/AccountManagerPage';
+import { AdminNewsDetail } from './components/News';
 
 import './App.css';
 
@@ -73,6 +74,8 @@ function AppShell() {
 
             {/* Admin-only account management */}
             <Route path="/accounts" element={<AccountManagerPage />} />
+            {/* Admin news detail route */}
+            <Route path="/admin/news/:date/:department" element={<AdminNewsDetail />} />
 
             {/* fallback */}
             <Route path="*" element={<Navigate to="/" />} />

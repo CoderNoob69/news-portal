@@ -31,6 +31,8 @@ const Login = ({ onLogin }) => {
       localStorage.setItem('token', data.token);          // <— save JWT
       /* optional: decode token here to grab dept / access */
 
+      localStorage.setItem('userName', formData.username); // Ensure userName is set
+
       if (onLogin) onLogin(formData.username);
       navigate('/admin');
     } catch {
